@@ -78,7 +78,7 @@ export default function NavigationMenu() {
       href: "/resource",
       subItems: [
         { label: "NEWS", href: "/page/new" },
-        { label: "REPORTS", href: "/resource/reports" },
+        { label: "REPORTS", href: "/page/reports" },
         { label: "PHOTOS", href: "/page/album" },
         { label: "Highlights Video", href: "/page/magazine" },
       ],

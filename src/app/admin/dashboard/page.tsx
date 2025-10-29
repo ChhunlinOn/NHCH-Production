@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import {
   Newspaper,
   Users,
@@ -17,6 +18,7 @@ import {
   Copy,
   Video,
   Image as ImageIcon,
+  Loader2,
 } from "lucide-react";
 import Image from "next/image";
 interface News {
@@ -99,9 +101,10 @@ type ActiveSection =
   | "our-family"
   | "mail-subscribe"
   | "short-videos"
-  | "albums";
+  | "albums"
+  | "send-mail";
 
-export default function AdminDashboard() {
+function AdminDashboardInner() {
   const [news, setNews] = useState<News[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
@@ -113,7 +116,17 @@ export default function AdminDashboard() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Set active section from query param
+  useEffect(() => {
+    const section = searchParams.get('section') as ActiveSection;
+    if (section && ["news", "users", "our-family", "mail-subscribe", "short-videos", "albums", "send-mail"].includes(section)) {
+      setActiveSection(section);
+    }
+  }, [searchParams]);
 
   // Navigation items
   const navigationItems = [
@@ -156,74 +169,59 @@ export default function AdminDashboard() {
   ];
 
   useEffect(() => {
-    const userData = localStorage.getItem("user");
-    if (userData) {
-      setCurrentUser(JSON.parse(userData));
-    }
-  }, []);
+    const load = async () => {
+      try {
+        const res = await fetch("/api/users/me");
+        if (res.ok) {
+          const me = await res.json();
+          setCurrentUser(me);
+        } else {
+          router.push("/admin/login");
+        }
+      } catch {
+        router.push("/admin/login");
+      }
+    };
+    load();
+  }, [router]);
 
   const checkAuth = useCallback(() => {
-    const token = localStorage.getItem("token");
-    const user = localStorage.getItem("user");
-
-    if (!token || !user) {
+    if (!currentUser) return false;
+    if (currentUser.role !== "admin" && currentUser.role !== "editor") {
       router.push("/admin/login");
       return false;
     }
-
-    try {
-      const userData = JSON.parse(user);
-      if (userData.role !== "admin" && userData.role !== "editor") {
-        router.push("/admin/login");
-        return false;
-      }
-      return true;
-    } catch {
-      router.push("/admin/login");
-      return false;
-    }
-  }, [router]);
+    return true;
+  }, [currentUser, router]);
 
   const fetchData = useCallback(async () => {
     try {
-      const token = localStorage.getItem("token");
-
-      const newsResponse = await fetch("/api/news?all=true", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const newsResponse = await fetch("/api/news?all=true");
       if (newsResponse.ok) {
         const newsData = await newsResponse.json();
         setNews(newsData.news || []);
       }
 
-      const teamResponse = await fetch("/api/team?all=true", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const teamResponse = await fetch("/api/team?all=true");
       if (teamResponse.ok) {
         const teamData = await teamResponse.json();
         setTeamMembers(teamData.team || []);
       }
 
-      const subscribersResponse = await fetch("/api/newsletter", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const subscribersResponse = await fetch("/api/newsletter");
       if (subscribersResponse.ok) {
         const subscribersData = await subscribersResponse.json();
         setSubscribers(subscribersData.subscribers || []);
       }
 
-      const shortVideosResponse = await fetch("/api/short-videos?all=true", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const shortVideosResponse = await fetch("/api/short-videos?all=true");
       if (shortVideosResponse.ok) {
         const shortVideosData = await shortVideosResponse.json();
         setShortVideos(shortVideosData.shortVideos || []);
       }
 
       if (currentUser?.role === "admin") {
-        const usersResponse = await fetch("/api/users", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const usersResponse = await fetch("/api/users");
         if (usersResponse.ok) {
           const usersData = await usersResponse.json();
           setUsers(usersData || []);
@@ -231,9 +229,7 @@ export default function AdminDashboard() {
       }
 
       // FIXED: Fetch albums - remove .albums since API returns array directly
-      const albumsResponse = await fetch("/api/albums", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const albumsResponse = await fetch("/api/albums");
       if (albumsResponse.ok) {
         const albumsData = await albumsResponse.json();
         console.log("Albums API response:", albumsData); // Debug log
@@ -250,10 +246,7 @@ export default function AdminDashboard() {
 
   const fetchSubscribers = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await fetch("/api/newsletter", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await fetch("/api/newsletter");
 
       if (response.ok) {
         const data = await response.json();
@@ -282,20 +275,22 @@ export default function AdminDashboard() {
     }
   }, [activeSection, checkAuth]);
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    router.push("/admin/login");
+  const handleLogout = async () => {
+    if (isLoggingOut) return; // Prevent multiple calls
+    setIsLoggingOut(true);
+    try {
+      await fetch("/api/users/logout", { method: "POST" });
+    } finally {
+      router.push("/admin/login");
+    }
   };
 
   const handleDeleteNews = async (id: number) => {
     if (!confirm("Are you sure you want to delete this news article?")) return;
 
     try {
-      const token = localStorage.getItem("token");
       const response = await fetch(`/api/news/${id}`, {
         method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (response.ok) {
@@ -315,10 +310,8 @@ export default function AdminDashboard() {
     if (!confirm("Are you sure you want to delete this user?")) return;
 
     try {
-      const token = localStorage.getItem("token");
       const response = await fetch(`/api/users/${id}`, {
         method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (response.ok) {
@@ -338,10 +331,8 @@ export default function AdminDashboard() {
     if (!confirm("Are you sure you want to delete this team member?")) return;
 
     try {
-      const token = localStorage.getItem("token");
       const response = await fetch(`/api/team/${id}`, {
         method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (response.ok) {
@@ -361,10 +352,8 @@ export default function AdminDashboard() {
     if (!confirm("Are you sure you want to delete this subscriber?")) return;
 
     try {
-      const token = localStorage.getItem("token");
       const response = await fetch(`/api/newsletter/${id}`, {
         method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (response.ok) {
@@ -384,10 +373,8 @@ export default function AdminDashboard() {
     if (!confirm("Are you sure you want to delete this short video?")) return;
 
     try {
-      const token = localStorage.getItem("token");
       const response = await fetch(`/api/short-videos/${id}`, {
         method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (response.ok) {
@@ -412,10 +399,8 @@ export default function AdminDashboard() {
       return;
 
     try {
-      const token = localStorage.getItem("token");
       const response = await fetch(`/api/albums/${id}`, {
         method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (response.ok) {
@@ -454,6 +439,7 @@ export default function AdminDashboard() {
       });
   };
 
+
   const filteredNavigation = navigationItems.filter((item) =>
     item.allowedRoles.includes(currentUser?.role)
   );
@@ -489,6 +475,18 @@ export default function AdminDashboard() {
           <div className="space-y-2">
             {filteredNavigation.map((item) => {
               const Icon = item.icon;
+              if ((item as { href?: string }).href) {
+                return (
+                  <Link
+                    key={item.id}
+                    href={(item as unknown as { href: string }).href}
+                    className={`w-full flex items-center px-4 py-3 text-left rounded-lg transition-colors text-gray-600 hover:bg-gray-100`}
+                  >
+                    <Icon className="w-5 h-5 mr-3" />
+                    <span className="font-medium">{item.name}</span>
+                  </Link>
+                );
+              }
               return (
                 <button
                   key={item.id}
@@ -518,10 +516,20 @@ export default function AdminDashboard() {
           </div>
           <button
             onClick={handleLogout}
-            className="w-full flex items-center justify-center px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
+            disabled={isLoggingOut}
+            className="w-full flex items-center justify-center px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <LogOut className="w-4 h-4 mr-2" />
-            Logout
+            {isLoggingOut ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Logging out...
+              </>
+            ) : (
+              <>
+                <LogOut className="w-4 h-4 mr-2" />
+                Logout
+              </>
+            )}
           </button>
         </div>
       </div>
@@ -901,6 +909,12 @@ export default function AdminDashboard() {
                   Newsletter Subscribers
                 </h2>
                 <div className="flex gap-3">
+                  <Link href="/admin/mailer">
+                    <button className="flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+                      <MailPlus className="w-4 h-4 mr-2" />
+                      Send Mail
+                    </button>
+                  </Link>
                   <button
                     onClick={copyAllEmails}
                     className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -1234,7 +1248,7 @@ export default function AdminDashboard() {
                   <p className="text-gray-500 mb-6">
                     Create your first album to start organizing photos.
                   </p>
-                  <Link href="/admin/create">
+                  <Link href="/admin/albums/create">
                     <button className="flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors mx-auto">
                       <Plus className="w-5 h-5 mr-2" />
                       Create Your First Album
@@ -1244,6 +1258,7 @@ export default function AdminDashboard() {
               )}
             </div>
           )}
+
         </main>
       </div>
 
@@ -1255,5 +1270,13 @@ export default function AdminDashboard() {
         />
       )}
     </div>
+  );
+}
+
+export default function AdminDashboard() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gray-100 flex items-center justify-center"><div className="animate-spin rounded-full h-32 w-32 border-b-2 border-green-600"></div></div>}>
+      <AdminDashboardInner />
+    </Suspense>
   );
 }

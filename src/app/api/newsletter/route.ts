@@ -1,24 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import jwt from "jsonwebtoken";
-
-const JWT_SECRET = process.env.JWT_SECRET!;
-
-function verifyToken(request: NextRequest) {
-  const authHeader = request.headers.get('authorization');
-  if (!authHeader) return null;
-  
-  const token = authHeader.replace('Bearer ', '');
-  try {
-    return jwt.verify(token, JWT_SECRET) as { id: number; role: string };
-  } catch {
-    return null;
-  }
-}
+import { getAuthPayload } from "@/lib/auth";
 
 export async function GET(request: NextRequest) {
   try {
-    const payload = verifyToken(request);
+    const payload = await getAuthPayload(request);
     if (!payload) {
       return NextResponse.json(
         { success: false, error: 'Authentication required' },

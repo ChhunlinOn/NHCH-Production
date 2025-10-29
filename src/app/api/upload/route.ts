@@ -1,22 +1,9 @@
 import { NextResponse } from "next/server";
 import cloudinary from "@/lib/cloudinary";
-import jwt from "jsonwebtoken";
-
-const JWT_SECRET = process.env.JWT_SECRET!;
-
-function verifyToken(req: Request) {
-  const auth = req.headers.get("authorization");
-  if (!auth) return null;
-  const token = auth.split(" ")[1];
-  try {
-    return jwt.verify(token, JWT_SECRET) as { id: number; role: string };
-  } catch {
-    return null;
-  }
-}
+import { getAuthPayload } from "@/lib/auth";
 
 export async function POST(req: Request) {
-  const payload = verifyToken(req);
+  const payload = await getAuthPayload(req);
   if (!payload) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -58,7 +45,7 @@ export async function POST(req: Request) {
 }
 
 export async function DELETE(req: Request) {
-  const payload = verifyToken(req);
+  const payload = await getAuthPayload(req);
   if (!payload) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

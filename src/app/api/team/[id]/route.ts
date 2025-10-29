@@ -1,20 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import jwt from "jsonwebtoken";
 import { prisma } from "@/lib/prisma";
 import cloudinary from "@/lib/cloudinary";
-
-const JWT_SECRET = process.env.JWT_SECRET!;
-
-function verifyToken(req: Request) {
-  const auth = req.headers.get("authorization");
-  if (!auth) return null;
-  const token = auth.split(" ")[1];
-  try {
-    return jwt.verify(token, JWT_SECRET) as { id: number; role: string };
-  } catch {
-    return null;
-  }
-}
+import { getAuthPayload } from "@/lib/auth";
 
 // FIX: Add proper type for params and await it
 export async function GET(
@@ -25,7 +12,7 @@ export async function GET(
     // FIX: Await the params first
     const { id } = await params;
     
-    const payload = verifyToken(request);
+    const payload = await getAuthPayload(request);
     if (!payload) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -58,7 +45,7 @@ export async function PUT(
   try {
     const { id } = await params;
     
-    const payload = verifyToken(request);
+    const payload = await getAuthPayload(request);
     if (!payload) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -111,7 +98,7 @@ export async function DELETE(
   try {
     const { id } = await params;
     
-    const payload = verifyToken(request);
+    const payload = await getAuthPayload(request);
     if (!payload) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }

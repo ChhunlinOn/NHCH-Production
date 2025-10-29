@@ -41,18 +41,10 @@ export default function CreateUserPage() {
     setIsLoading(true);
 
     try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        alert("Please log in first");
-        router.push("/admin/login");
-        return;
-      }
-
       const response = await fetch("/api/users", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(formData),
       });

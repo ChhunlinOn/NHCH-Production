@@ -8,7 +8,6 @@ export default function AdminLogin() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -28,11 +27,8 @@ export default function AdminLogin() {
       const data = await response.json();
 
       if (response.ok) {
-        if (data.user.role === "admin" || data.user.role === "editor") {
-          localStorage.setItem("token", data.token);
-          localStorage.setItem("user", JSON.stringify(data.user));
-
-          window.location.href = "/admin/dashboard";
+        if (data.user?.role === "admin" || data.user?.role === "editor") {
+          router.push("/admin/dashboard");
         } else {
           setError("Access denied. Only administrators and editors can login.");
         }
@@ -40,8 +36,7 @@ export default function AdminLogin() {
         setError(data.error || "Login failed");
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {
+    } catch {
       setError("Network error. Please try again.");
     } finally {
       setIsLoading(false);

@@ -6,6 +6,9 @@ import Footer from "@/app/component/Footer";
 export const metadata: Metadata = {
   title: "New Hope Children's Homes",
   description: "Welcome to New Hope Children's Homes",
+  icons: {
+    icon: "/favi.png",
+  },
 };
 
 export default function RootLayout({

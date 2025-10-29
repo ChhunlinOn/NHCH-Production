@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { prisma } from "@/lib/prisma";
+import { cookies } from "next/headers";
+import { JWT_COOKIE_NAME } from "@/lib/auth";
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
@@ -22,9 +24,18 @@ export async function POST(req: Request) {
     expiresIn: "1d",
   });
 
+  const cookieStore = await cookies();
+  const isProd = process.env.NODE_ENV === "production";
+  cookieStore.set(JWT_COOKIE_NAME, token, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: isProd,
+    path: "/",
+    maxAge: 60 * 60 * 24,
+  });
+
   return NextResponse.json({
     message: "Login successful",
-    token,
     user: {
       id: user.id,
       name: user.name,

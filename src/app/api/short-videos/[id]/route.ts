@@ -1,19 +1,6 @@
 import { NextResponse } from "next/server";
-import jwt from "jsonwebtoken";
 import { prisma } from "@/lib/prisma";
-
-const JWT_SECRET = process.env.JWT_SECRET!;
-
-function verifyToken(req: Request) {
-  const auth = req.headers.get("authorization");
-  if (!auth) return null;
-  const token = auth.split(" ")[1];
-  try {
-    return jwt.verify(token, JWT_SECRET) as { id: number; role: string };
-  } catch {
-    return null;
-  }
-}
+import { getAuthPayload } from "@/lib/auth";
 
 function extractIdFromRequestUrl(request: Request): number | null {
   try {
@@ -28,7 +15,7 @@ function extractIdFromRequestUrl(request: Request): number | null {
 }
 
 export async function GET(request: Request) {
-  const payload = verifyToken(request);
+  const payload = await getAuthPayload(request);
   if (!payload) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -50,7 +37,7 @@ export async function GET(request: Request) {
 }
 
 export async function PUT(request: Request) {
-  const payload = verifyToken(request);
+  const payload = await getAuthPayload(request);
   if (!payload) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -79,7 +66,7 @@ export async function PUT(request: Request) {
 }
 
 export async function DELETE(request: Request) {
-  const payload = verifyToken(request);
+  const payload = await getAuthPayload(request);
   if (!payload) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

@@ -42,15 +42,7 @@ export default function EditTeamMember() {
   useEffect(() => {
     const fetchTeamMember = async () => {
       try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          router.push("/admin/login");
-          return;
-        }
-
-        const response = await fetch(`/api/team/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await fetch(`/api/team/${id}`);
 
         if (response.ok) {
           const teamData = await response.json();
@@ -109,20 +101,12 @@ export default function EditTeamMember() {
     file: File
   ): Promise<{ image: string; imagePublicId: string } | null> => {
     try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        throw new Error("No authentication token found");
-      }
-
       const formData = new FormData();
       formData.append("file", file);
 
       console.log("Uploading image...");
       const response = await fetch("/api/upload", {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
         body: formData,
       });
 
@@ -183,13 +167,6 @@ export default function EditTeamMember() {
     setUploadProgress(0);
 
     try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        alert("Please log in first");
-        router.push("/admin/login");
-        return;
-      }
-
       let imageData = null;
 
       // Upload new image if selected
@@ -219,7 +196,6 @@ export default function EditTeamMember() {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(updateData),
       });

@@ -27,19 +27,11 @@ export default function CreateTeamMember() {
     file: File
   ): Promise<{ image: string; imagePublicId: string } | null> => {
     try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        throw new Error("No authentication token found");
-      }
-
       const formData = new FormData();
       formData.append("file", file);
 
       const response = await fetch("/api/upload", {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
         body: formData,
       });
 
@@ -145,14 +137,6 @@ export default function CreateTeamMember() {
     setUploadProgress(0);
 
     try {
-      // Check authentication first
-      const token = localStorage.getItem("token");
-      if (!token) {
-        alert("Please log in first");
-        router.push("/admin/login");
-        return;
-      }
-
       // Upload image first
       setUploadProgress(30);
       const imageData = await uploadImage(imageFile);
@@ -172,7 +156,6 @@ export default function CreateTeamMember() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           ...formData,
