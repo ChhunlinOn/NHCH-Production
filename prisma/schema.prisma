@@ -112,3 +112,12 @@ model NewsletterCampaign {
 
   @@map("newsletter_campaigns")
 }
+
+model MailLog {
+  id            Int      @id @default(autoincrement())
+  subscriberId  Int
+  mailsenderId  Int
+  sentAt        DateTime @default(now())
+
+  @@map("mail_logs")
+}
