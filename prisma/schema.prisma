@@ -101,3 +101,14 @@ model Photo {
   
   @@map("photos")
 }
+
+model NewsletterCampaign {
+  id          Int      @id @default(autoincrement())
+  subject     String
+  html        String
+  sentAt      DateTime?
+  createdAt   DateTime @default(now())
+  isSent      Boolean  @default(false)
+
+  @@map("newsletter_campaigns")
+}
