@@ -4,25 +4,27 @@ import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 
 async function main() {
-  const password = "nhch@12345"; // your default admin password
+  const password = process.env.ADMIN_PASSWORD || ""; // fallback for safety
+  const email = process.env.ADMIN_EMAIL || ""; // fallback for safety
+  const name = process.env.ADMIN_NAME || ""; // fallback for safety
+
   const hashed = await bcrypt.hash(password, 10);
 
-  // Upsert ensures admin exists
   await prisma.user.upsert({
-    where: { email: "admin@nhch.com" },
+    where: { email },
     update: {
-      password: hashed, // if admin exists, update password
+      password: hashed,
     },
     create: {
-      name: "NHCH Admin",
-      email: "admin@nhch.com",
+      name,
+      email,
       password: hashed,
-      role: "ADMIN", // important for permissions
+      role: "ADMIN",
       img: null,
     },
   });
 
-  console.log("✅ Admin user is ready (email: admin@nhch.com, password: nhch@12345)");
+  console.log(`✅ Admin user is ready (email: ${email}, password: ${password})`);
 }
 
 main()
@@ -32,4 +34,4 @@ main()
   })
   .finally(async () => {
     await prisma.$disconnect();
-  });
+});
