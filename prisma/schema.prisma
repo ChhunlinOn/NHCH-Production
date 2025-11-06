@@ -16,8 +16,7 @@ model User {
   img        String?
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
-
-  albums     Album[]  
+  albums     Album[]
   photos     Photo[]
 }
 
@@ -68,7 +67,7 @@ model ShortVideos {
   created_at    DateTime @default(now())
   updated_at    DateTime @updatedAt
 
-    @@map("ShortVideos")
+  @@map("ShortVideos")
 }
 
 model Album {
@@ -80,10 +79,9 @@ model Album {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   createdBy   Int
-  
-  photos      Photo[]
   creator     User     @relation(fields: [createdBy], references: [id], onDelete: Cascade)
-  
+  photos      Photo[]
+
   @@map("albums")
 }
 
@@ -95,29 +93,38 @@ model Photo {
   createdAt   DateTime @default(now())
   albumId     Int
   uploadedBy  Int
-  
   album       Album    @relation(fields: [albumId], references: [id], onDelete: Cascade)
   uploader    User     @relation(fields: [uploadedBy], references: [id], onDelete: Cascade)
-  
+
   @@map("photos")
 }
 
 model NewsletterCampaign {
-  id          Int      @id @default(autoincrement())
-  subject     String
-  html        String
-  sentAt      DateTime?
-  createdAt   DateTime @default(now())
-  isSent      Boolean  @default(false)
+  id        Int       @id @default(autoincrement())
+  subject   String
+  html      String
+  sentAt    DateTime?
+  createdAt DateTime  @default(now())
+  isSent    Boolean   @default(false)
 
   @@map("newsletter_campaigns")
 }
 
 model MailLog {
-  id            Int      @id @default(autoincrement())
-  subscriberId  Int
-  mailsenderId  Int
-  sentAt        DateTime @default(now())
+  id           Int      @id @default(autoincrement())
+  subscriberId Int
+  mailsenderId Int
+  sentAt       DateTime @default(now())
 
   @@map("mail_logs")
+}
+
+model ReportPdf {
+  id          Int      @id @default(autoincrement())
+  title       String
+  cover_url   String?
+  pdf_url     String   // store the PDF file link or path
+  description String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
 }

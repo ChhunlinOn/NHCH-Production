@@ -19,20 +19,32 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
+    // Check if file is an image or PDF
+    const isImage = file.type.startsWith('image/');
+    const isPdf = file.type === 'application/pdf';
+
+    if (!isImage && !isPdf) {
+      return NextResponse.json({ error: "Only image and PDF files are allowed" }, { status: 400 });
+    }
+
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
     const base64String = `data:${file.type};base64,${buffer.toString('base64')}`;
 
+    // Set resource type based on file type
+    const resourceType = isPdf ? 'raw' : 'image';
+
     const result = await cloudinary.uploader.upload(base64String, {
       folder: 'nho-news',
-      resource_type: 'image'
+      resource_type: resourceType
     });
 
     return NextResponse.json({
       success: true,
       imageUrl: result.secure_url,
-      publicId: result.public_id
+      publicId: result.public_id,
+      fileType: isPdf ? 'pdf' : 'image'
     });
 
   } catch (error) {

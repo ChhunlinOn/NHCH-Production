@@ -19,6 +19,7 @@ import {
   Video,
   Image as ImageIcon,
   Loader2,
+  FileText,
 } from "lucide-react";
 import Image from "next/image";
 interface News {
@@ -95,6 +96,16 @@ interface Photo {
   uploadedBy: number;
 }
 
+interface ReportPdf {
+  id: number;
+  title: string;
+  cover_url: string | null;
+  pdf_url: string;
+  description: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 type ActiveSection =
   | "news"
   | "users"
@@ -102,7 +113,7 @@ type ActiveSection =
   | "mail-subscribe"
   | "short-videos"
   | "albums"
-  | "send-mail";
+  | "report-pdfs";
 
 function AdminDashboardInner() {
   const [news, setNews] = useState<News[]>([]);
@@ -111,6 +122,7 @@ function AdminDashboardInner() {
   const [subscribers, setSubscribers] = useState<NewsletterSubscriber[]>([]);
   const [shortVideos, setShortVideos] = useState<ShortVideo[]>([]);
   const [albums, setAlbums] = useState<Album[]>([]);
+  const [reportPdfs, setReportPdfs] = useState<ReportPdf[]>([]);
   const [activeSection, setActiveSection] = useState<ActiveSection>("news");
   const [isLoading, setIsLoading] = useState(true);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -123,7 +135,7 @@ function AdminDashboardInner() {
   // Set active section from query param
   useEffect(() => {
     const section = searchParams.get('section') as ActiveSection;
-    if (section && ["news", "users", "our-family", "mail-subscribe", "short-videos", "albums", "send-mail"].includes(section)) {
+    if (section && ["news", "users", "our-family", "mail-subscribe", "short-videos", "albums", "report-pdfs"].includes(section)) {
       setActiveSection(section);
     }
   }, [searchParams]);
@@ -164,6 +176,12 @@ function AdminDashboardInner() {
       id: "albums" as ActiveSection,
       name: "Albums",
       icon: ImageIcon,
+      allowedRoles: ["admin", "editor"],
+    },
+    {
+      id: "report-pdfs" as ActiveSection,
+      name: "Report PDFs",
+      icon: FileText,
       allowedRoles: ["admin", "editor"],
     },
   ];
@@ -236,6 +254,14 @@ function AdminDashboardInner() {
         setAlbums(albumsData || []); // FIXED: Use albumsData directly, not albumsData.albums
       } else {
         console.error("Failed to fetch albums:", albumsResponse.status);
+      }
+
+      const reportPdfsResponse = await fetch("/api/report-pdfs");
+      if (reportPdfsResponse.ok) {
+        const reportPdfsData = await reportPdfsResponse.json();
+        setReportPdfs(reportPdfsData || []);
+      } else {
+        console.error("Failed to fetch report PDFs:", reportPdfsResponse.status);
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -413,6 +439,27 @@ function AdminDashboardInner() {
     } catch (error) {
       console.error("Error deleting album:", error);
       alert("Error deleting album. Check console for details.");
+    }
+  };
+
+  const handleDeleteReportPdf = async (id: number) => {
+    if (!confirm("Are you sure you want to delete this report PDF?")) return;
+
+    try {
+      const response = await fetch(`/api/report-pdfs/${id}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        setReportPdfs(reportPdfs.filter((item) => item.id !== id));
+        alert("Report PDF deleted successfully!");
+      } else {
+        const errorData = await response.json();
+        alert(`Error: ${errorData.error || "Failed to delete report PDF"}`);
+      }
+    } catch (error) {
+      console.error("Error deleting report PDF:", error);
+      alert("Error deleting report PDF. Check console for details.");
     }
   };
 
@@ -909,12 +956,6 @@ function AdminDashboardInner() {
                   Newsletter Subscribers
                 </h2>
                 <div className="flex gap-3">
-                  <Link href="/admin/mailer">
-                    <button className="flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
-                      <MailPlus className="w-4 h-4 mr-2" />
-                      Send Mail
-                    </button>
-                  </Link>
                   <button
                     onClick={copyAllEmails}
                     className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -1256,6 +1297,121 @@ function AdminDashboardInner() {
                   </Link>
                 </div>
               )}
+            </div>
+          )}
+
+          {/* Report PDFs Section */}
+          {activeSection === "report-pdfs" && (
+            <div className="space-y-6">
+              <div className="flex justify-between items-center">
+                <h2 className="text-2xl font-bold text-gray-900">
+                  Report PDFs Management
+                </h2>
+                <Link href="/admin/reportpdf/create">
+                  <button className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                    <Plus className="w-4 h-4 mr-2" />
+                    Create Report PDF
+                  </button>
+                </Link>
+              </div>
+
+              {/* Report PDFs Table */}
+              <div className="bg-white rounded-lg shadow overflow-hidden">
+                <table className="w-full">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                        ID
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                        Title
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                        Cover
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                        PDF URL
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                        Created
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200">
+                    {reportPdfs.map((pdf, index) => (
+                      <tr key={pdf.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                          {index + 1}
+                        </td>
+                        <td className="px-6 py-4">
+                          <div>
+                            <div className="text-sm font-medium text-gray-900 line-clamp-2 max-w-xs">
+                              {pdf.title}
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          {pdf.cover_url ? (
+                            <Image
+                              src={pdf.cover_url}
+                              alt={pdf.title}
+                              className="w-12 h-12 object-cover rounded"
+                              width={48}
+                              height={48}
+                            />
+                          ) : (
+                            <span className="text-gray-400 text-sm">No cover</span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <a href={pdf.pdf_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800">
+                            View PDF
+                          </a>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {new Date(pdf.created_at).toLocaleDateString()}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex space-x-2">
+                            <Link href={`/admin/reportpdf/edit/${pdf.id}`}>
+                              <button
+                                className="flex items-center px-3 py-1 border border-gray-300 rounded-md text-sm hover:bg-gray-50 transition-colors"
+                                title="Edit Report PDF"
+                              >
+                                <Edit className="w-4 h-4 mr-1" />
+                                Edit
+                              </button>
+                            </Link>
+                            <button
+                              onClick={() => handleDeleteReportPdf(pdf.id)}
+                              className="flex items-center px-3 py-1 bg-red-600 text-white rounded-md text-sm hover:bg-red-700 transition-colors"
+                              title="Delete Report PDF"
+                            >
+                              <Trash2 className="w-4 h-4 mr-1" />
+                              Delete
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+
+                {reportPdfs.length === 0 && (
+                  <div className="text-center py-8">
+                    <p className="text-gray-500">No report PDFs found.</p>
+                    <Link href="/admin/reportpdf/create">
+                      <button className="inline-block mt-2 flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                        <Plus className="w-4 h-4 mr-2" />
+                        Create Your First Report PDF
+                      </button>
+                    </Link>
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
