@@ -641,14 +641,6 @@ export default function HomePage() {
               Every child deserves love, hope, and a bright future. Your support
               helps us continue this vital work across Cambodia.
             </p>
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center max-w-md sm:max-w-none mx-auto">
-              <button className="bg-green-600 text-white hover:bg-green-700 shadow-md transform hover:scale-105 transition-all duration-300 px-4 py-2.5 sm:px-6 sm:py-3 rounded-lg font-medium text-sm sm:text-base">
-                Learn More About Our Mission
-              </button>
-              <button className="border border-green-600 text-green-600 hover:bg-green-600 hover:text-white shadow-md transform hover:scale-105 transition-all duration-300 px-4 py-2.5 sm:px-6 sm:py-3 rounded-lg font-medium text-sm sm:text-base">
-                Support Our Homes
-              </button>
-            </div>
           </div>
         </div>
       </section>

@@ -267,13 +267,8 @@ export default function KidsCampPage() {
             We believe every gift matters. Whether you&apos;re a teacher, artist, entrepreneur, student, or pastor, your
             unique talents can bless these children and contribute to their future.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="px-8 py-4 bg-white text-[#43A047] font-semibold rounded-full hover:bg-gray-100 transform hover:scale-105 transition-all duration-200 shadow-lg">
-              Join Our Mission
-            </button>
-            <button className="px-8 py-4 border-2 bg-white border-white text-[#43A047] font-semibold rounded-full hover:bg-gray-50 hover:text-black transition-all duration-200">
-              Learn More
-            </button>
+          <div className="flex justify-center mb-6">
+            <Heart className="w-12 h-12 text-[#43A047]" />
           </div>
           <p className="mt-8 text-lg opacity-90">
             Thank you for being the embodiment of compassion, kindness, and hope. Your impact is real, and your journey

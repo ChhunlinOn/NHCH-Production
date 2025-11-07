@@ -1,7 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { Users, Award } from "lucide-react";
+import { Users, Award, Heart } from "lucide-react";
 
 interface BoardMember {
   id: number;
@@ -144,21 +144,16 @@ export default function BoardDirectors() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <h3 className="text-3xl font-bold text-gray-900 mb-6">
+            <div className="flex justify-center mb-4">
+              <Heart className="w-12 h-12 text-[#43A047]" />
+            </div>
+            <h3 className="text-3xl font-bold text-[#43A047] mb-6">
               Join Us in Making a Difference
             </h3>
-            <p className="text-xl text-gray-700 mb-8">
+            <p className="text-xl text-[#43A047] mb-8">
               Support our mission and help us continue providing hope and
               transformation to children across Cambodia.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="px-8 py-4 bg-[#43A047] text-white font-semibold rounded-full hover:bg-[#388E3C] transform hover:scale-105 transition-all duration-300 shadow-lg">
-                Support Our Mission
-              </button>
-              <button className="px-8 py-4 border-2 border-[#43A047] text-[#43A047] font-semibold rounded-full hover:bg-[#43A047] hover:text-white transition-all duration-300">
-                Learn More About Us
-              </button>
-            </div>
           </motion.div>
         </div>
       </section>

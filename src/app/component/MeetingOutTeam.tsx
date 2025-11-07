@@ -166,25 +166,17 @@ export default function OurTeam() {
         {/* Call to Action */}
         <div className="mt-16 text-center">
           <div className="bg-gray-50 rounded-2xl p-8 max-w-4xl mx-auto">
-            <div className="flex items-center justify-center mb-4">
-              <Heart className="w-8 h-8 text-[#43A047] mr-3" />
-              <h3 className="text-2xl font-bold text-gray-900">
-                Join Our Mission
-              </h3>
+            <div className="flex justify-center mb-4">
+              <Heart className="w-8 h-8 text-[#43A047]" />
             </div>
-            <p className="text-lg text-gray-700 mb-6">
+            <h3 className="text-2xl font-bold text-[#43A047]">
+              Join Our Mission
+            </h3>
+            <p className="text-lg text-[#43A047] mb-6">
               Our dedicated team works tirelessly to provide hope and
               transformation. Together, we can make an even greater impact in
               the lives of Cambodia&#39;s children.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="px-8 py-3 bg-[#43A047] text-white font-semibold rounded-full hover:bg-[#388E3C] transform hover:scale-105 transition-all duration-300 shadow-lg">
-                Support Our Work
-              </button>
-              <button className="px-8 py-3 border-2 border-[#43A047] text-[#43A047] font-semibold rounded-full hover:bg-[#43A047] hover:text-white transition-all duration-300">
-                Learn More About Us
-              </button>
-            </div>
           </div>
         </div>
       </div>

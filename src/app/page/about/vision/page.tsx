@@ -297,13 +297,8 @@ export default function VisionMissionPage() {
               with promise.&quot;
             </p>
           </div>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="px-8 py-4 bg-white text-[#43A047] font-semibold rounded-full hover:bg-gray-100 transform hover:scale-105 transition-all duration-200 shadow-lg">
-              Support Our Mission
-            </button>
-            <button className="px-8 py-4 border-2 bg-white border-none text-[#43A047] font-semibold rounded-full hover:bg-gray-50 hover:text-black transition-all duration-200">
-              Learn More
-            </button>
+          <div className="flex justify-center mb-6">
+            <Heart className="w-12 h-12 text-[#43A047]" />
           </div>
         </div>
       </section>
