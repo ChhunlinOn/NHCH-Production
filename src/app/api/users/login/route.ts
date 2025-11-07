@@ -25,11 +25,10 @@ export async function POST(req: Request) {
   });
 
   const cookieStore = await cookies();
-  const isProd = process.env.NODE_ENV === "production";
   cookieStore.set(JWT_COOKIE_NAME, token, {
     httpOnly: true,
     sameSite: "lax",
-    secure: isProd,
+    secure: req.url.startsWith("https://"),
     path: "/",
     maxAge: 60 * 60 * 24,
   });
