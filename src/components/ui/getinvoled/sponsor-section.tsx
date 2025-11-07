@@ -50,7 +50,7 @@ export default function SponsorSection() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8 w-300 h-30  mx-auto">
               {/* Sponsor Locally Card */}
               <motion.a
-                href="/sponsor-locally"
+                href="/page/sponsor-locally"
                 initial={{ opacity: 0, x: -30 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6 }}
@@ -94,7 +94,7 @@ export default function SponsorSection() {
 
               {/* Sponsor Partnership Card */}
               <motion.a
-                href="/sponsor-partnership"
+                href="https://seapc.org/sponsorships/"
                 initial={{ opacity: 0, x: 30 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6 }}
@@ -136,9 +136,6 @@ export default function SponsorSection() {
                 </div>
               </motion.a>
             </div>
-
-          
-          
           </motion.div>
 
           {/* What Sponsorship Provides */}

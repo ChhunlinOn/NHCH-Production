@@ -75,4 +75,8 @@ const partners = [
     name: "A new thread",
     logo: "/partner7.jpg",
   },
+  {
+    name: " seapc Limited",
+    logo: "/partnershipSeapc.jpg",
+  },
 ];

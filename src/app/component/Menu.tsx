@@ -313,11 +313,11 @@ export default function NavigationMenu() {
             {/* Mobile Action Buttons */}
             <div className="flex flex-col px-4 pt-4 space-y-3">
               <Link
-                href="/support"
+                href="/page/donate"
                 onClick={closeMobileMenu}
                 className="px-6 py-3 bg-[#43A047] text-white font-semibold rounded-full hover:bg-[#388E3C] transition-colors duration-200 text-center shadow-md"
               >
-                SUPPORT
+                Donate
               </Link>
               <Link
                 href="/page/contact"
