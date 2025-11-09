@@ -9,6 +9,9 @@ export const metadata: Metadata = {
   icons: {
     icon: "/favi.png",
   },
+  verification: {
+    google: process.env.GOOGLE_SITE_VERIFICATION_CODE,
+  },
 };
 
 export default function RootLayout({
