@@ -19,7 +19,14 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <head />
+      <head>
+        {process.env.GOOGLE_SITE_VERIFICATION_CODE && (
+          <meta
+            name="google-site-verification"
+            content={process.env.GOOGLE_SITE_VERIFICATION_CODE}
+          />
+        )}
+      </head>
       <body className="antialiased">
         <header className="sticky top-0 z-50 bg-white shadow-md">
           <NavigationMenu />
