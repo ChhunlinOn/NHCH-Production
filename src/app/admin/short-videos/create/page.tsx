@@ -24,19 +24,11 @@ export default function CreateShortVideoPage() {
     file: File
   ): Promise<{ video: string; videoPublicId: string } | null> => {
     try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        throw new Error("No authentication token found");
-      }
-
       const formData = new FormData();
       formData.append("file", file);
 
       const response = await fetch("/api/upload-video", {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
         body: formData,
       });
 
@@ -117,14 +109,6 @@ export default function CreateShortVideoPage() {
     setUploadProgress(0);
 
     try {
-      // Check authentication first
-      const token = localStorage.getItem("token");
-      if (!token) {
-        alert("Please log in first");
-        router.push("/admin/login");
-        return;
-      }
-
       // Upload video first
       setUploadProgress(30);
       const videoData = await uploadVideo(videoFile);
@@ -144,7 +128,6 @@ export default function CreateShortVideoPage() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           ...formData,

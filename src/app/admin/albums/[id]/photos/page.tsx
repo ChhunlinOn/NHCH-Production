@@ -622,12 +622,9 @@ export default function AlbumPhotos() {
 
   const fetchAlbumAndPhotos = useCallback(async () => {
     try {
-      const token = localStorage.getItem("token");
       const albumId = params.id;
 
-      const albumResponse = await fetch(`/api/albums/${albumId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const albumResponse = await fetch(`/api/albums/${albumId}`);
 
       if (albumResponse.ok) {
         const albumData = await albumResponse.json();
@@ -706,7 +703,6 @@ export default function AlbumPhotos() {
     setIsUploading(true);
 
     try {
-      const token = localStorage.getItem("token");
       const formData = new FormData();
 
       // Add all files
@@ -719,9 +715,6 @@ export default function AlbumPhotos() {
 
       const response = await fetch(`/api/albums/${params.id}/photos`, {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
         body: formData,
       });
 
@@ -756,10 +749,8 @@ export default function AlbumPhotos() {
     if (!confirm("Are you sure you want to delete this photo?")) return;
 
     try {
-      const token = localStorage.getItem("token");
       const response = await fetch(`/api/photos/${photoId}`, {
         method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (response.ok) {

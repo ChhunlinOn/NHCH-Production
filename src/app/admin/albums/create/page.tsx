@@ -17,12 +17,10 @@ export default function CreateAlbum() {
     setIsLoading(true);
 
     try {
-      const token = localStorage.getItem("token");
       const response = await fetch("/api/albums", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           title,
@@ -140,3 +138,4 @@ export default function CreateAlbum() {
     </div>
   );
 }
+

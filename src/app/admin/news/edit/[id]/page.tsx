@@ -40,15 +40,7 @@ export default function EditNewsPage() {
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          router.push("/admin/login");
-          return;
-        }
-
-        const response = await fetch(`/api/news/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await fetch(`/api/news/${id}`);
 
         if (response.ok) {
           const newsData = await response.json();
@@ -112,20 +104,12 @@ export default function EditNewsPage() {
     file: File
   ): Promise<{ image: string; imagePublicId: string } | null> => {
     try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        throw new Error("No authentication token found");
-      }
-
       const formData = new FormData();
       formData.append("file", file);
 
       console.log("Uploading image...");
       const response = await fetch("/api/upload", {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
         body: formData,
       });
 
@@ -157,15 +141,11 @@ export default function EditNewsPage() {
 
   const deleteOldImage = async (publicId: string) => {
     try {
-      const token = localStorage.getItem("token");
-      if (!token) return;
-
       console.log("Deleting old image:", publicId);
       const response = await fetch("/api/upload", {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ publicId }),
       });
@@ -199,13 +179,6 @@ export default function EditNewsPage() {
     setUploadProgress(0);
 
     try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        alert("Please log in first");
-        router.push("/admin/login");
-        return;
-      }
-
       let imageData = null;
       let oldImagePublicId = null;
 
@@ -244,7 +217,6 @@ export default function EditNewsPage() {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(updateData),
       });

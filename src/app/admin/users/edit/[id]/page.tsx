@@ -40,15 +40,7 @@ export default function EditUserPage() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          router.push("/admin/login");
-          return;
-        }
-
-        const response = await fetch(`/api/users/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await fetch(`/api/users/${id}`);
 
         if (response.ok) {
           const userData = await response.json();
@@ -100,18 +92,10 @@ export default function EditUserPage() {
     setIsLoading(true);
 
     try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        alert("Please log in first");
-        router.push("/admin/login");
-        return;
-      }
-
       const response = await fetch(`/api/users/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           name: formData.name,
@@ -296,3 +280,4 @@ export default function EditUserPage() {
     </div>
   );
 }
+

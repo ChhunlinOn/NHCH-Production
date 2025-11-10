@@ -35,17 +35,7 @@ export default function EditShortVideoPage({ params }: { params: Promise<{ id: s
   useEffect(() => {
     const fetchVideoData = async () => {
       try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          router.push("/admin/login");
-          return;
-        }
-
-        const response = await fetch(`/api/short-videos/${videoId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await fetch(`/api/short-videos/${videoId}`);
 
         if (!response.ok) {
           throw new Error("Failed to fetch video data");
@@ -74,19 +64,11 @@ export default function EditShortVideoPage({ params }: { params: Promise<{ id: s
     file: File
   ): Promise<{ video: string; videoPublicId: string } | null> => {
     try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        throw new Error("No authentication token found");
-      }
-
       const formData = new FormData();
       formData.append("file", file);
 
       const response = await fetch("/api/upload-video", {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
         body: formData,
       });
 
@@ -161,14 +143,6 @@ export default function EditShortVideoPage({ params }: { params: Promise<{ id: s
     setUploadProgress(0);
 
     try {
-      // Check authentication first
-      const token = localStorage.getItem("token");
-      if (!token) {
-        alert("Please log in first");
-        router.push("/admin/login");
-        return;
-      }
-
       let videoData = null;
       let finalVideoUrl = currentVideo;
       let finalVideoPublicId = videoPublicId;
@@ -198,7 +172,6 @@ export default function EditShortVideoPage({ params }: { params: Promise<{ id: s
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           ...formData,
@@ -424,3 +397,4 @@ export default function EditShortVideoPage({ params }: { params: Promise<{ id: s
     </div>
   );
 }
+

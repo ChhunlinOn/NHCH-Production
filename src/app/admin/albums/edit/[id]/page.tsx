@@ -23,10 +23,7 @@ export default function EditAlbum() {
 
   const fetchAlbum = useCallback(async () => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await fetch(`/api/albums/${params.id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await fetch(`/api/albums/${params.id}`);
 
       if (response.ok) {
         const albumData = await response.json();
@@ -53,12 +50,10 @@ export default function EditAlbum() {
     setIsLoading(true);
 
     try {
-      const token = localStorage.getItem("token");
       const response = await fetch(`/api/albums/${params.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           title,
@@ -182,3 +177,4 @@ export default function EditAlbum() {
     </div>
   );
 }
+
