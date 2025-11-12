@@ -4,19 +4,15 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Save, Upload, X } from "lucide-react";
-import Image from "next/image";
 
 export default function CreateReportPdfPage() {
   const [formData, setFormData] = useState({
     title: "",
-    cover_url: "",
     pdf_url: "",
     description: "",
   });
 
   const [isLoading, setIsLoading] = useState(false);
-  const [coverPreview, setCoverPreview] = useState<string | null>(null);
-  const [coverFile, setCoverFile] = useState<File | null>(null);
   const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
 
@@ -56,40 +52,15 @@ export default function CreateReportPdfPage() {
     }
   };
 
-  const handleCoverChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      // Validate file type
-      if (!file.type.startsWith("image/")) {
-        alert("Please select an image file");
-        return;
-      }
-
-      // Validate file size (5MB max)
-      if (file.size > 5 * 1024 * 1024) {
-        alert("Image size must be less than 5MB");
-        return;
-      }
-
-      setCoverFile(file);
-
-      // Create preview
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setCoverPreview(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+  
 
   const handlePdfChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Validate file type
-      if (file.type !== "application/pdf") {
-        alert("Please select a PDF file");
-        return;
-      }
+      const name = file.name?.toLowerCase() || "";
+      const type = file.type || "";
+      const isPdf = type === "application/pdf" || type.includes("pdf") || name.endsWith(".pdf");
+      if (!isPdf) { alert("Please select a PDF file"); return; }
 
       // Validate file size (20MB max for PDFs)
       if (file.size > 20 * 1024 * 1024) {
@@ -98,18 +69,6 @@ export default function CreateReportPdfPage() {
       }
 
       setPdfFile(file);
-    }
-  };
-
-  const removeCover = () => {
-    setCoverFile(null);
-    setCoverPreview(null);
-    setFormData((prev) => ({ ...prev, cover_url: "" }));
-
-    // Reset file input
-    const fileInput = document.getElementById("cover") as HTMLInputElement;
-    if (fileInput) {
-      fileInput.value = "";
     }
   };
 
@@ -137,24 +96,12 @@ export default function CreateReportPdfPage() {
     setUploadProgress(0);
 
     try {
-      let coverUrl = formData.cover_url;
       let pdfUrl = formData.pdf_url;
-
-      // Upload cover image if provided
-      if (coverFile) {
-        setUploadProgress(20);
-        const imageData = await uploadFile(coverFile);
-        if (imageData && imageData.fileType === 'image') {
-          coverUrl = imageData.image;
-        }
-        setUploadProgress(40);
-      }
-
       // Upload PDF file
       if (pdfFile && !pdfUrl) {
         setUploadProgress(60);
         const pdfData = await uploadFile(pdfFile);
-        if (pdfData && pdfData.fileType === 'pdf') {
+        if (pdfData && pdfData.fileType === "pdf") {
           pdfUrl = pdfData.image;
         }
         setUploadProgress(80);
@@ -168,9 +115,9 @@ export default function CreateReportPdfPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          ...formData,
-          cover_url: coverUrl,
+          title: formData.title,
           pdf_url: pdfUrl,
+          description: formData.description,
         }),
       });
 
@@ -227,57 +174,7 @@ export default function CreateReportPdfPage() {
           className="bg-white rounded-lg shadow p-6"
         >
           <div className="space-y-6">
-            {/* Cover Image Upload Section */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Cover Image (Optional)
-              </label>
-              <div className="space-y-4">
-                {coverPreview ? (
-                  <div className="relative">
-                    <Image
-                      src={coverPreview}
-                      alt="Cover Preview"
-                      width={300}
-                      height={200}
-                      className="w-full h-48 object-cover rounded-lg border"
-                      unoptimized
-                    />
-                    <button
-                      type="button"
-                      onClick={removeCover}
-                      className="absolute top-2 right-2 p-1 bg-red-600 text-white rounded-full hover:bg-red-700"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-                ) : (
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-                    <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-600 mb-2">
-                      Drag and drop a cover image or click to browse
-                    </p>
-                    <p className="text-sm text-gray-500 mb-4">
-                      Supports JPG, PNG, WEBP • Max 5MB
-                    </p>
-                    <label htmlFor="cover" className="cursor-pointer">
-                      <span className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-                        <Upload className="w-4 h-4 mr-2" />
-                        Select Cover Image
-                      </span>
-                      <input
-                        type="file"
-                        id="cover"
-                        name="cover"
-                        accept="image/*"
-                        onChange={handleCoverChange}
-                        className="hidden"
-                      />
-                    </label>
-                  </div>
-                )}
-              </div>
-            </div>
+            
 
             {/* Progress Bar */}
             {uploadProgress > 0 && uploadProgress < 100 && (
@@ -323,12 +220,24 @@ export default function CreateReportPdfPage() {
                 {pdfFile ? (
                   <div className="flex items-center space-x-4 p-4 border border-gray-300 rounded-lg bg-gray-50">
                     <div className="flex items-center space-x-2">
-                      <svg className="w-8 h-8 text-red-600" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
+                      <svg
+                        className="w-8 h-8 text-red-600"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z"
+                          clipRule="evenodd"
+                        />
                       </svg>
                       <div>
-                        <p className="text-sm font-medium text-gray-900">{pdfFile.name}</p>
-                        <p className="text-xs text-gray-500">{(pdfFile.size / 1024 / 1024).toFixed(2)} MB</p>
+                        <p className="text-sm font-medium text-gray-900">
+                          {pdfFile.name}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {(pdfFile.size / 1024 / 1024).toFixed(2)} MB
+                        </p>
                       </div>
                     </div>
                     <button
@@ -357,7 +266,7 @@ export default function CreateReportPdfPage() {
                         type="file"
                         id="pdf"
                         name="pdf"
-                        accept="application/pdf"
+                        accept="application/pdf,.pdf"
                         onChange={handlePdfChange}
                         className="hidden"
                         required
@@ -367,7 +276,6 @@ export default function CreateReportPdfPage() {
                 )}
               </div>
             </div>
-
             <div>
               <label
                 htmlFor="description"

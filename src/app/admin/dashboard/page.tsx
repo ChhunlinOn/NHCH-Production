@@ -134,8 +134,19 @@ function AdminDashboardInner() {
 
   // Set active section from query param
   useEffect(() => {
-    const section = searchParams.get('section') as ActiveSection;
-    if (section && ["news", "users", "our-family", "mail-subscribe", "short-videos", "albums", "report-pdfs"].includes(section)) {
+    const section = searchParams.get("section") as ActiveSection;
+    if (
+      section &&
+      [
+        "news",
+        "users",
+        "our-family",
+        "mail-subscribe",
+        "short-videos",
+        "albums",
+        "report-pdfs",
+      ].includes(section)
+    ) {
       setActiveSection(section);
     }
   }, [searchParams]);
@@ -261,7 +272,10 @@ function AdminDashboardInner() {
         const reportPdfsData = await reportPdfsResponse.json();
         setReportPdfs(reportPdfsData || []);
       } else {
-        console.error("Failed to fetch report PDFs:", reportPdfsResponse.status);
+        console.error(
+          "Failed to fetch report PDFs:",
+          reportPdfsResponse.status
+        );
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -374,16 +388,19 @@ function AdminDashboardInner() {
     }
   };
 
-  const handleDeleteSubscriber = async (id: number) => {
+  const handleDeleteSubscriber = async (email: string) => {
     if (!confirm("Are you sure you want to delete this subscriber?")) return;
 
     try {
-      const response = await fetch(`/api/newsletter/${id}`, {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        `/api/newsletter/${encodeURIComponent(email)}`,
+        {
+          method: "DELETE",
+        }
+      );
 
       if (response.ok) {
-        setSubscribers(subscribers.filter((item) => item.id !== id));
+        setSubscribers(subscribers.filter((item) => item.email !== email));
         alert("Subscriber deleted successfully!");
       } else {
         const errorData = await response.json();
@@ -485,7 +502,6 @@ function AdminDashboardInner() {
         alert("Failed to copy email to clipboard");
       });
   };
-
 
   const filteredNavigation = navigationItems.filter((item) =>
     item.allowedRoles.includes(currentUser?.role)
@@ -1020,7 +1036,7 @@ function AdminDashboardInner() {
                           </button>
                           <button
                             onClick={() =>
-                              handleDeleteSubscriber(subscriber.id)
+                              handleDeleteSubscriber(subscriber.email)
                             }
                             className="flex items-center px-3 py-1 bg-red-600 text-white rounded-md text-sm hover:bg-red-700 transition-colors"
                             title="Delete Subscriber"
@@ -1299,7 +1315,6 @@ function AdminDashboardInner() {
               )}
             </div>
           )}
-
           {/* Report PDFs Section */}
           {activeSection === "report-pdfs" && (
             <div className="space-y-6">
@@ -1326,9 +1341,9 @@ function AdminDashboardInner() {
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                         Title
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                      {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                         Cover
-                      </th>
+                      </th> */}
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                         PDF URL
                       </th>
@@ -1353,21 +1368,13 @@ function AdminDashboardInner() {
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 py-4">
-                          {pdf.cover_url ? (
-                            <Image
-                              src={pdf.cover_url}
-                              alt={pdf.title}
-                              className="w-12 h-12 object-cover rounded"
-                              width={48}
-                              height={48}
-                            />
-                          ) : (
-                            <span className="text-gray-400 text-sm">No cover</span>
-                          )}
-                        </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          <a href={pdf.pdf_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800">
+                          <a
+                            href={`/api/report-pdfs/${pdf.id}/view`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:text-blue-800"
+                          >
                             View PDF
                           </a>
                         </td>
@@ -1414,7 +1421,6 @@ function AdminDashboardInner() {
               </div>
             </div>
           )}
-
         </main>
       </div>
 
@@ -1431,7 +1437,13 @@ function AdminDashboardInner() {
 
 export default function AdminDashboard() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-gray-100 flex items-center justify-center"><div className="animate-spin rounded-full h-32 w-32 border-b-2 border-green-600"></div></div>}>
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-green-600"></div>
+        </div>
+      }
+    >
       <AdminDashboardInner />
     </Suspense>
   );
