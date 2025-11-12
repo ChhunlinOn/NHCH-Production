@@ -97,7 +97,7 @@ const Page = () => {
           >
             <span className="text-green-600">Volunteer</span> Join{" "}
             <span className="bg-gradient-to-r from-green-600 to-green-700 bg-clip-text text-transparent">
-              New Hope for Orphans
+              New Hope Children&#39;s Homes
             </span>{" "}
             and Make a Difference
           </motion.h1>
@@ -106,18 +106,17 @@ const Page = () => {
             className="mt-6 text-lg text-gray-600 max-w-2xl mx-auto"
             variants={itemVariants}
           >
-            New Hope for Orphans is a well established organization dedicated to providing Cambodian
-             children and young people with access to quality education. Our volunteer program offers a meaningful 
-             opportunity to contribute, whether you have specialized skills or simply a passion for helping others. 
-            
+            New Hope Children&#39;s Homes is a well established organization
+            dedicated to providing Cambodian children and young people with
+            access to quality education. Our volunteer program offers a
+            meaningful opportunity to contribute, whether you have specialized
+            skills or simply a passion for helping others.
           </motion.p>
 
           <motion.div
             className="mt-8 flex justify-center"
             variants={itemVariants}
-          >
-            
-          </motion.div>
+          ></motion.div>
         </div>
       </motion.section>
 
@@ -162,20 +161,18 @@ const Page = () => {
                   <div className="mx-auto mb-3 w-12 h-12 bg-green-600 rounded-full flex items-center justify-center">
                     <GraduationCap className="w-6 h-6 text-white" />
                   </div>
-                  <h3 className="text-lg font-semibold">
-                    General Maintenance 
-                  </h3>
+                  <h3 className="text-lg font-semibold">General Maintenance</h3>
                 </div>
                 <div className="text-center pt-0 px-6 pb-6">
                   <p className="text-sm text-gray-600">
-                  Support maintenance tasks and key infrastructure projects to ensure a safe and functional environment
+                    Support maintenance tasks and key infrastructure projects to
+                    ensure a safe and functional environment
                   </p>
                 </div>
               </div>
             </motion.div>
           </div>
         </div>
-      
       </motion.section>
 
       {/* Specialized Skills Section */}
@@ -192,7 +189,8 @@ const Page = () => {
               Specialized Skills We Need
             </h2>
             <p className="mt-4 text-gray-600 max-w-2xl mx-auto">
-              In addition to classroom support, we periodically seek experts in various fields, including
+              In addition to classroom support, we periodically seek experts in
+              various fields, including
             </p>
           </motion.div>
 
@@ -221,7 +219,6 @@ const Page = () => {
                 </div>
               </motion.div>
             ))}
-            
           </div>
         </div>
       </motion.section>
@@ -244,9 +241,9 @@ const Page = () => {
               Let&apos;s Connect & Create Change
             </h2>
             <p className="text-gray-600 mb-6 text-lg">
-              If you have expertise in any of these areas or believe you can contribute in another way, we&apos;d love to hear from you!
+              If you have expertise in any of these areas or believe you can
+              contribute in another way, we&apos;d love to hear from you!
             </p>
-            
 
             <div className="bg-gradient-to-r from-green-50 to-green-100 rounded-xl p-6 border border-green-100 shadow-sm">
               <p className="text-gray-700 mb-2 font-medium flex items-center justify-center gap-2">
@@ -259,7 +256,6 @@ const Page = () => {
               >
                 info@nhocambodia.org
               </a>
-            
             </div>
           </motion.div>
         </div>

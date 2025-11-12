@@ -180,7 +180,7 @@ export default function EditReportPdfPage() {
       if (coverFile) {
         setUploadProgress(20);
         const imageData = await uploadFile(coverFile);
-        if (imageData && imageData.fileType === 'image') {
+        if (imageData && imageData.fileType === "image") {
           coverUrl = imageData.image;
         }
         setUploadProgress(40);
@@ -190,7 +190,7 @@ export default function EditReportPdfPage() {
       if (pdfFile) {
         setUploadProgress(60);
         const pdfData = await uploadFile(pdfFile);
-        if (pdfData && pdfData.fileType === 'pdf') {
+        if (pdfData && pdfData.fileType === "pdf") {
           pdfUrl = pdfData.image;
         }
         setUploadProgress(80);
@@ -388,12 +388,24 @@ export default function EditReportPdfPage() {
                 {pdfFile ? (
                   <div className="flex items-center space-x-4 p-4 border border-gray-300 rounded-lg bg-gray-50">
                     <div className="flex items-center space-x-2">
-                      <svg className="w-8 h-8 text-red-600" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
+                      <svg
+                        className="w-8 h-8 text-red-600"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z"
+                          clipRule="evenodd"
+                        />
                       </svg>
                       <div>
-                        <p className="text-sm font-medium text-gray-900">{pdfFile.name}</p>
-                        <p className="text-xs text-gray-500">{(pdfFile.size / 1024 / 1024).toFixed(2)} MB</p>
+                        <p className="text-sm font-medium text-gray-900">
+                          {pdfFile.name}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {(pdfFile.size / 1024 / 1024).toFixed(2)} MB
+                        </p>
                       </div>
                     </div>
                     <button

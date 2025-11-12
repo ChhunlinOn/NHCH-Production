@@ -62,7 +62,6 @@ export async function PUT(
         { status: 400 }
       );
     }
-
     if (!pdf_url || !pdf_url.trim()) {
       return NextResponse.json(
         { error: "PDF URL is required" },

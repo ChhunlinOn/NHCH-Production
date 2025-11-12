@@ -96,7 +96,7 @@ export default function CreateAlbum() {
                 onChange={(e) => setDescription(e.target.value)}
                 rows={4}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                placeholder="Enter album description (optional)"
+                placeholder="Enter album description"
               />
             </div>
 
@@ -113,7 +113,7 @@ export default function CreateAlbum() {
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                placeholder="Enter category (optional)"
+                placeholder="Enter category"
               />
             </div>
 

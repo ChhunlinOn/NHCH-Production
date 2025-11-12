@@ -19,9 +19,14 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
-    // Check if file is an image or PDF
-    const isImage = file.type.startsWith('image/');
-    const isPdf = file.type === 'application/pdf';
+    // Check if file is an image or PDF with robust detection
+    const originalType = file.type || '';
+    const filename = (file as File).name || '';
+    const isPdf =
+      originalType === 'application/pdf' ||
+      originalType.includes('pdf') ||
+      filename.toLowerCase().endsWith('.pdf');
+    const isImage = !isPdf && originalType.startsWith('image/');
 
     if (!isImage && !isPdf) {
       return NextResponse.json({ error: "Only image and PDF files are allowed" }, { status: 400 });
@@ -30,7 +35,8 @@ export async function POST(req: Request) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    const base64String = `data:${file.type};base64,${buffer.toString('base64')}`;
+    const mime = isPdf ? 'application/pdf' : (originalType || 'application/octet-stream');
+    const base64String = `data:${mime};base64,${buffer.toString('base64')}`;
 
     // Set resource type based on file type
     const resourceType = isPdf ? 'raw' : 'image';
