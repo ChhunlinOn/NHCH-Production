@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: "New Hope Children's Homes",
   description: "Welcome to New Hope Children's Homes",
   icons: {
-    icon: "/favi.png",
+    icon: "/nhch.png",
   },
   verification: {
     google: process.env.GOOGLE_SITE_VERIFICATION_CODE,
