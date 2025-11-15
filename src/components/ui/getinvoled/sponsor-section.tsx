@@ -12,10 +12,8 @@ import {
   BookOpen,
   Stethoscope,
   Plus,
-  Sparkles,
   Users,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 export default function SponsorSection() {
   const benefits = [
@@ -185,45 +183,6 @@ export default function SponsorSection() {
               ))}
             </div>
           </div>
-
-          {/* Call to Action */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="text-center"
-          >
-            <div className="bg-gradient-to-r from-green-600 to-green-700 rounded-3xl px-6 py-10 sm:px-10 sm:py-12 text-white max-w-6xl mx-auto flex flex-col items-center gap-6 relative">
-              {/* Question */}
-              <h3 className="text-lg sm:text-xl md:text-2xl font-bold leading-snug max-w-3xl text-center">
-                Will you be part of the next chapter of this story?
-              </h3>
-
-              {/* Button (shifted just a little bit to the right for balance) */}
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="w-full sm:w-auto relative left-0 sm:left-1 md:left-2"
-              >
-                <Button
-                  size="lg"
-                  className="w-full sm:w-auto bg-white hover:bg-gray-100 text-green-600 font-bold px-4 sm:px-8 py-3 text-sm sm:text-base rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 flex items-center justify-center gap-2 text-center"
-                >
-                  <Sparkles className="w-5 h-5 shrink-0" />
-                  <span className="leading-snug">
-                    <span className="block sm:hidden">
-                      Sponsor a child today
-                    </span>
-                    <span className="hidden sm:block">
-                      Become a sponsor today and give a child the chance to
-                      thrive.
-                    </span>
-                  </span>
-                </Button>
-              </motion.div>
-            </div>
-          </motion.div>
         </div>
       </div>
     </section>

@@ -110,29 +110,6 @@ export default function CoinsForKids() {
             })}
           </div>
         </div>
-
-        {/* Call to Action */}
-
-        <div className="max-w-6xl mx-auto text-center">
-          <div className="bg-gradient-to-r from-green-600 to-green-700 rounded-3xl p-4 sm:p-8 text-white">
-            <h3 className="text-xl sm:text-2xl font-bold mb-4">
-              Ready to Start Your Campaign?
-            </h3>
-            <p className="text-base sm:text-lg mb-6">
-              We&apos;re here to support you with tools and ideas to make your
-              fundraiser a success!
-            </p>
-
-            {/* Centered Button */}
-            <div className="flex justify-center">
-              <div className="transform hover:scale-105 active:scale-95 transition-transform duration-300">
-                <button className="bg-white text-green-700 font-semibold px-6 py-3 rounded-full shadow-md hover:bg-green-50">
-                  Get Started
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
       {/* </div> */}
     </section>
