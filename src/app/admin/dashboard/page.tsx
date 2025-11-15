@@ -1408,7 +1408,7 @@ function AdminDashboardInner() {
                 </table>
 
                 {reportPdfs.length === 0 && (
-                  <div className="text-center py-8">
+                  <div className="flex flex-col justify-center items-center text-center py-8">
                     <p className="text-gray-500">No report PDFs found.</p>
                     <Link href="/admin/reportpdf/create">
                       <button className="inline-block mt-2 flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
