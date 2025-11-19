@@ -21,16 +21,18 @@ model User {
 }
 
 model News {
-  id            Int      @id @default(autoincrement())
-  image         String?
-  imagePublicId String?
+  id            Int         @id @default(autoincrement())
   title         String
   text          String
   date          String
   category      String
   excerpt       String
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
+  created_at    DateTime    @default(now())
+  updated_at    DateTime    @updatedAt
+  
+  newsImages    NewsImage[]
+  
+  @@map("news")
 }
 
 model TeamMember {
@@ -127,4 +129,17 @@ model ReportPdf {
   description String?
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
+}
+model NewsImage {
+  id          Int      @id @default(autoincrement())
+  imageUrl    String
+  publicId    String?
+  caption     String?
+  displayOrder Int     @default(0)
+  newsId      Int
+  news        News     @relation(fields: [newsId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("news_images")
 }

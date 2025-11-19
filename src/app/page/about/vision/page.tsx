@@ -95,7 +95,7 @@ export default function VisionMissionPage() {
               <div className="aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl">
                 <Image
                   src="/nho.jpg"
-                  alt="New Hope for Orphans Cambodia"
+                  alt="New Hope Children's Homes"
                   fill
                   className="object-cover"
                 />

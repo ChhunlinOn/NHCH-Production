@@ -38,7 +38,7 @@ export default function WhatWeDoSection() {
             What We Do
           </h2>
           <p className="max-w-3xl mx-auto text-xl leading-relaxed text-gray-700">
-            New Hope for Orphans is dedicated to providing Christ-based
+            New Hope Children&#39;s Homes is dedicated to providing Christ-based
             nurturing and pathways to success through comprehensive educational
             and spiritual programs across Cambodia.
           </p>

@@ -12,7 +12,6 @@ interface ReportPdf {
   created_at: string;
   updated_at: string;
 }
-
 export default function ReportsPage() {
   const [reports, setReports] = useState<ReportPdf[]>([]);
   const [loading, setLoading] = useState(true);
@@ -108,6 +107,8 @@ export default function ReportsPage() {
                         <Image
                           src={report.cover_url}
                           alt={report.title}
+                          width={400}
+                          height={224}
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                         />
                       ) : (

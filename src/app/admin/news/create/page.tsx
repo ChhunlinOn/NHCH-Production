@@ -3,8 +3,14 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Save, Upload, X } from "lucide-react";
+import { ArrowLeft, Save, Upload, X, Plus } from "lucide-react";
 import Image from "next/image";
+
+interface NewsImageData {
+  imageUrl: string;
+  publicId?: string;
+  caption?: string;
+}
 
 export default function CreateNewsPage() {
   const [formData, setFormData] = useState({
@@ -15,19 +21,15 @@ export default function CreateNewsPage() {
     date: new Date().toISOString().split("T")[0],
   });
 
+  const [images, setImages] = useState<NewsImageData[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [imagePublicId, setImagePublicId] = useState<string | null>(null);
+  const [uploadingImages, setUploadingImages] = useState<string[]>([]);
 
   const router = useRouter();
 
-  // Upload image function
-  const uploadImage = async (
-    file: File
-  ): Promise<{ image: string; imagePublicId: string } | null> => {
+  // Upload single image function
+  const uploadImage = async (file: File): Promise<NewsImageData | null> => {
     try {
       const formData = new FormData();
       formData.append("file", file);
@@ -46,8 +48,9 @@ export default function CreateNewsPage() {
 
       if (data.success) {
         return {
-          image: data.imageUrl,
-          imagePublicId: data.publicId,
+          imageUrl: data.imageUrl,
+          publicId: data.publicId,
+          caption: "",
         };
       } else {
         throw new Error(data.error || "Upload failed");
@@ -58,51 +61,66 @@ export default function CreateNewsPage() {
     }
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      // Validate file type
+  // Handle multiple image selection
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    // Validate files
+    const validFiles = Array.from(files).filter((file) => {
       if (!file.type.startsWith("image/")) {
-        alert("Please select an image file");
-        return;
+        alert(`File ${file.name} is not an image`);
+        return false;
       }
-
-      // Validate file size (5MB max)
       if (file.size > 5 * 1024 * 1024) {
-        alert("Image size must be less than 5MB");
-        return;
+        alert(`Image ${file.name} must be less than 5MB`);
+        return false;
       }
+      return true;
+    });
 
-      setImageFile(file);
+    if (validFiles.length === 0) return;
 
-      // Create preview
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setImagePreview(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
+    // Add to uploading state
+    setUploadingImages((prev) => [...prev, ...validFiles.map((f) => f.name)]);
+
+    try {
+      // Upload images sequentially
+      for (const file of validFiles) {
+        setUploadProgress(30);
+        const imageData = await uploadImage(file);
+        setUploadProgress(70);
+
+        if (imageData) {
+          setImages((prev) => [...prev, imageData]);
+        }
+      }
+      setUploadProgress(100);
+    } catch (error) {
+      console.error("Error uploading images:", error);
+      alert("Some images failed to upload");
+    } finally {
+      setUploadingImages([]);
+      setUploadProgress(0);
+
+      // Reset file input
+      const fileInput = document.getElementById("images") as HTMLInputElement;
+      if (fileInput) fileInput.value = "";
     }
   };
 
-  const removeImage = () => {
-    setImageFile(null);
-    setImagePreview(null);
-    setImagePublicId(null);
+  const removeImage = (index: number) => {
+    setImages((prev) => prev.filter((_, i) => i !== index));
+  };
 
-    // Reset file input
-    const fileInput = document.getElementById("image") as HTMLInputElement;
-    if (fileInput) {
-      fileInput.value = "";
-    }
+  const updateImageCaption = (index: number, caption: string) => {
+    setImages((prev) =>
+      prev.map((img, i) => (i === index ? { ...img, caption } : img))
+    );
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!imageFile) {
-      alert("Please select an image for the news article");
-      return;
-    }
 
     // Validate required fields
     if (
@@ -115,23 +133,18 @@ export default function CreateNewsPage() {
       return;
     }
 
+    // Validate at least one image
+    if (images.length === 0) {
+      alert("Please upload at least one image for the news article");
+      return;
+    }
+
     setIsLoading(true);
-    setUploadProgress(0);
 
     try {
-      // Upload image first
-      setUploadProgress(30);
-      const imageData = await uploadImage(imageFile);
-      setUploadProgress(70);
-
-      if (!imageData) {
-        throw new Error("Failed to upload image");
-      }
-
-      // Create news with image data
       console.log("Creating news with data:", {
         ...formData,
-        image: imageData.image,
+        images: images,
       });
 
       const newsResponse = await fetch("/api/news", {
@@ -141,12 +154,9 @@ export default function CreateNewsPage() {
         },
         body: JSON.stringify({
           ...formData,
-          image: imageData.image,
-          imagePublicId: imageData.imagePublicId,
+          images: images,
         }),
       });
-
-      setUploadProgress(100);
 
       console.log("News creation response status:", newsResponse.status);
 
@@ -175,7 +185,7 @@ export default function CreateNewsPage() {
         }
       }
 
-      alert("News created successfully!");
+      alert("News created successfully with " + images.length + " images!");
       router.push("/admin/dashboard");
     } catch (error) {
       console.error("Error creating news:", error);
@@ -186,7 +196,6 @@ export default function CreateNewsPage() {
       );
     } finally {
       setIsLoading(false);
-      setUploadProgress(0);
     }
   };
 
@@ -205,8 +214,8 @@ export default function CreateNewsPage() {
     <div className="min-h-screen bg-gray-100 p-6">
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center space-x-4">
-            <Link href="/admin/dashboard">
+          <div className="flex items-center space-x-4 mt-20">
+            <Link href="/admin/dashboard?section=news">
               <button className="flex items-center px-4 py-2 text-gray-600 hover:bg-white rounded-lg transition-colors">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Dashboard
@@ -223,75 +232,116 @@ export default function CreateNewsPage() {
           className="bg-white rounded-lg shadow p-6"
         >
           <div className="space-y-6">
-            {/* Image Upload Section */}
+            {/* Multiple Image Upload Section */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                News Image *
+                News Images * ({images.length} uploaded)
               </label>
               <div className="space-y-4">
-                {imagePreview ? (
-                  <div className="relative">
-                    <Image
-                      src={imagePreview}
-                      alt="Preview"
-                      width={600}
-                      height={400}
-                      className="w-full h-64 object-cover rounded-lg border"
-                      unoptimized
+                {/* Image Upload Area */}
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+                  <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                  <p className="text-gray-600 mb-2">
+                    Drag and drop images or click to browse
+                  </p>
+                  <p className="text-sm text-gray-500 mb-4">
+                    Multiple images supported • JPG, PNG, WEBP • Max 5MB each
+                  </p>
+                  <label htmlFor="images" className="cursor-pointer">
+                    <span className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                      <Plus className="w-4 h-4 mr-2" />
+                      Select Images
+                    </span>
+                    <input
+                      type="file"
+                      id="images"
+                      name="images"
+                      accept="image/*"
+                      multiple
+                      onChange={handleImageChange}
+                      className="hidden"
                     />
-                    <button
-                      type="button"
-                      onClick={removeImage}
-                      className="absolute top-2 right-2 p-1 bg-red-600 text-white rounded-full hover:bg-red-700"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
+                  </label>
+                </div>
+
+                {/* Uploading Indicator */}
+                {uploadingImages.length > 0 && (
+                  <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <p className="text-sm text-blue-700 font-medium mb-2">
+                      Uploading {uploadingImages.length} image(s)...
+                    </p>
+                    <ul className="text-xs text-blue-600 space-y-1">
+                      {uploadingImages.map((filename, index) => (
+                        <li key={index}>• {filename}</li>
+                      ))}
+                    </ul>
+                    {uploadProgress > 0 && uploadProgress < 100 && (
+                      <div className="mt-2">
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div
+                            className="bg-green-600 h-2 rounded-full transition-all duration-300"
+                            style={{ width: `${uploadProgress}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                ) : (
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-                    <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-600 mb-2">
-                      Drag and drop an image or click to browse
-                    </p>
-                    <p className="text-sm text-gray-500 mb-4">
-                      Supports JPG, PNG, WEBP • Max 5MB
-                    </p>
-                    <label htmlFor="image" className="cursor-pointer">
-                      <span className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-                        <Upload className="w-4 h-4 mr-2" />
-                        Select Image
-                      </span>
-                      <input
-                        type="file"
-                        id="image"
-                        name="image"
-                        accept="image/*"
-                        onChange={handleImageChange}
-                        className="hidden"
-                        required
-                      />
-                    </label>
+                )}
+
+                {/* Uploaded Images Preview */}
+                {images.length > 0 && (
+                  <div className="space-y-4">
+                    <h4 className="font-medium text-gray-700">
+                      Uploaded Images Preview
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {images.map((image, index) => (
+                        <div
+                          key={index}
+                          className="border rounded-lg p-4 space-y-3"
+                        >
+                          <div className="relative">
+                            <Image
+                              src={image.imageUrl}
+                              alt={`Preview ${index + 1}`}
+                              width={300}
+                              height={200}
+                              className="w-full h-48 object-cover rounded"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => removeImage(index)}
+                              className="absolute top-2 right-2 p-1 bg-red-600 text-white rounded-full hover:bg-red-700"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                            <div className="absolute top-2 left-2 px-2 py-1 bg-black bg-opacity-50 text-white text-xs rounded">
+                              {index + 1}
+                            </div>
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-600 mb-1">
+                              Caption (optional)
+                            </label>
+                            <input
+                              type="text"
+                              value={image.caption || ""}
+                              onChange={(e) =>
+                                updateImageCaption(index, e.target.value)
+                              }
+                              placeholder="Add image caption..."
+                              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-green-500"
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
             </div>
 
-            {/* Progress Bar */}
-            {uploadProgress > 0 && uploadProgress < 100 && (
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm text-gray-600">
-                  <span>Uploading image...</span>
-                  <span>{uploadProgress}%</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div
-                    className="bg-green-600 h-2 rounded-full transition-all duration-300"
-                    style={{ width: `${uploadProgress}%` }}
-                  ></div>
-                </div>
-              </div>
-            )}
-
+            {/* Other form fields remain the same */}
             <div>
               <label
                 htmlFor="title"
@@ -409,11 +459,13 @@ export default function CreateNewsPage() {
               </Link>
               <button
                 type="submit"
-                disabled={isLoading}
-                className="flex items-center px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 transition-colors"
+                disabled={isLoading || images.length === 0}
+                className="flex items-center px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 <Save className="w-4 h-4 mr-2" />
-                {isLoading ? "Creating..." : "Create News"}
+                {isLoading
+                  ? "Creating..."
+                  : `Create News (${images.length} images)`}
               </button>
             </div>
           </div>
