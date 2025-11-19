@@ -14,7 +14,11 @@ interface ShortVideo {
   updated_at: string;
 }
 
-export default function EditShortVideoPage({ params }: { params: Promise<{ id: string }> }) {
+export default function EditShortVideoPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const [formData, setFormData] = useState({
     title: "",
   });
@@ -215,7 +219,9 @@ export default function EditShortVideoPage({ params }: { params: Promise<{ id: s
       console.error("Error updating short video:", error);
       alert(
         `Error: ${
-          error instanceof Error ? error.message : "Failed to update short video"
+          error instanceof Error
+            ? error.message
+            : "Failed to update short video"
         }`
       );
     } finally {
@@ -248,8 +254,8 @@ export default function EditShortVideoPage({ params }: { params: Promise<{ id: s
     <div className="min-h-screen bg-gray-100 p-6">
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center space-x-4">
-            <Link href="/admin/dashboard">
+          <div className="flex items-center space-x-4 mt-20">
+            <Link href="/admin/dashboard?section=short-videos">
               <button className="flex items-center px-4 py-2 text-gray-600 hover:bg-white rounded-lg transition-colors">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Dashboard
@@ -311,10 +317,9 @@ export default function EditShortVideoPage({ params }: { params: Promise<{ id: s
                   <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
                     <Play className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                     <p className="text-gray-600 mb-2">
-                      {currentVideo 
-                        ? "Drag and drop a new video or click to browse" 
-                        : "Drag and drop a video or click to browse"
-                      }
+                      {currentVideo
+                        ? "Drag and drop a new video or click to browse"
+                        : "Drag and drop a video or click to browse"}
                     </p>
                     <p className="text-sm text-gray-500 mb-4">
                       Supports MP4, AVI, MOV, WEBM • Max 50MB
@@ -397,4 +402,3 @@ export default function EditShortVideoPage({ params }: { params: Promise<{ id: s
     </div>
   );
 }
-

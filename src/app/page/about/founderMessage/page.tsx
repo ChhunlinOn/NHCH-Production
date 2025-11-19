@@ -138,7 +138,7 @@ export default function FounderMessage() {
                 In 1999, God placed a deep calling on my heart to care for
                 vulnerable children. That calling led to the birth of{" "}
                 <span className="text-[#43A047] font-bold">
-                  New Hope of Orphans
+                  New Hope Children&#39;s Homes
                 </span>
                 a place where children could find not just shelter, but love,
                 hope, and the life-changing message of Christ.
@@ -283,7 +283,6 @@ export default function FounderMessage() {
                 Donate Now
               </Button>
             </Link>
-
           </div>
         </div>
       </div>

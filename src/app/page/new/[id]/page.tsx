@@ -1,65 +1,69 @@
-"use client"
+"use client";
 
-import Image from "next/image"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { useState, useEffect } from "react"
-import { CalendarDays, ArrowLeft, Clock } from "lucide-react"
-import { useParams } from "next/navigation"
+// import Image from "next/image";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { useState, useEffect } from "react";
+import { CalendarDays, ArrowLeft, Clock } from "lucide-react";
+import { useParams } from "next/navigation";
+import ImageCarousel from "@/app/component/ImageCarousel";
+
+interface NewsImage {
+  id: number;
+  imageUrl: string;
+  caption?: string;
+  displayOrder: number;
+}
 
 interface News {
-  id: number
-  image: string
-  title: string
-  text: string
-  date: string
-  category: string
-  excerpt: string
-  created_at: string
-  updated_at: string
+  id: number;
+  title: string;
+  text: string;
+  date: string;
+  category: string;
+  excerpt: string;
+  created_at: string;
+  updated_at: string;
+  newsImages: NewsImage[];
 }
 
 export default function NewsDetailPage() {
-  const params = useParams()
-  const id = params.id as string
-  const [news, setNews] = useState<News | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const params = useParams();
+  const id = params.id as string;
+  const [news, setNews] = useState<News | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Only fetch if we have an ID and news isn't already loaded
     const fetchNewsDetail = async () => {
       try {
-        setIsLoading(true)
-        setError(null)
-        console.log('Fetching news ID:', id) // Debug log
+        setIsLoading(true);
+        setError(null);
+        console.log("Fetching news ID:", id);
 
-        const response = await fetch(`/api/news/public/${id}`)
-        
+        const response = await fetch(`/api/news/public/${id}`);
+
         if (!response.ok) {
           if (response.status === 404) {
-            throw new Error('News article not found')
+            throw new Error("News article not found");
           }
-          throw new Error('Failed to fetch news')
+          throw new Error("Failed to fetch news");
         }
-        
-        const data: News = await response.json()
-        setNews(data)
+
+        const data: News = await response.json();
+        setNews(data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred')
-        console.error('Error fetching news:', err)
+        setError(err instanceof Error ? err.message : "An error occurred");
+        console.error("Error fetching news:", err);
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
-    }
+    };
 
     if (id && !news) {
-      fetchNewsDetail()
+      fetchNewsDetail();
     }
-  }, [id, news])
-
-  // Debug: check what's happening
-  console.log('Current state:', { id, isLoading, error, news })
+  }, [id, news]);
 
   if (isLoading) {
     return (
@@ -77,7 +81,7 @@ export default function NewsDetailPage() {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   if (error) {
@@ -86,22 +90,6 @@ export default function NewsDetailPage() {
         <div className="text-center">
           <h1 className="text-2xl font-bold text-red-500 mb-4">Error</h1>
           <p className="text-gray-600 mb-4">{error}</p>
-          <Link href="/news">
-            <Button className="bg-green-500 hover:bg-green-600">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to News
-            </Button>
-          </Link>
-        </div>
-      </div>
-    )
-  }
-
-  if (!news) {
-    return (
-      <div className="container mx-auto px-4 py-8 max-w-4xl mt-16">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-500 mb-4">News not found</h1>
           <Link href="/page/new">
             <Button className="bg-green-500 hover:bg-green-600">
               <ArrowLeft className="w-4 h-4 mr-2" />
@@ -110,7 +98,25 @@ export default function NewsDetailPage() {
           </Link>
         </div>
       </div>
-    )
+    );
+  }
+
+  if (!news) {
+    return (
+      <div className="container mx-auto px-4 py-8 max-w-4xl mt-16">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-500 mb-4">
+            News not found
+          </h1>
+          <Link href="/page/new">
+            <Button className="bg-green-500 hover:bg-green-600">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to News
+            </Button>
+          </Link>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -118,7 +124,10 @@ export default function NewsDetailPage() {
       {/* Back Button */}
       <div className="mb-8">
         <Link href="/page/new">
-          <Button variant="outline" className="border-green-500 text-green-500 hover:bg-green-50">
+          <Button
+            variant="outline"
+            className="border-green-500 text-green-500 hover:bg-green-50"
+          >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to News
           </Button>
@@ -133,14 +142,14 @@ export default function NewsDetailPage() {
         <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight">
           {news.title}
         </h1>
-        
+
         <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 mb-6">
           <div className="flex items-center">
             <CalendarDays className="w-4 h-4 mr-2" />
-            {new Date(news.date).toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric'
+            {new Date(news.date).toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
             })}
           </div>
           <div className="flex items-center">
@@ -150,30 +159,21 @@ export default function NewsDetailPage() {
         </div>
       </div>
 
-      {/* Featured Image */}
+      {/* Image Carousel */}
       <div className="mb-8">
-        <div className="relative h-64 md:h-96 rounded-xl overflow-hidden">
-          <Image
-            src={news.image || "/nho.jpg"}
-            alt={news.title}
-            fill
-            className="object-cover"
-            priority
-          />
-        </div>
+        <ImageCarousel images={news.newsImages} />
       </div>
 
       {/* Article Content */}
-      <article className="prose prose-lg max-w-none mb-12">
+      <article className="prose prose-lg max-w-none mb-12 text-center">
         <div className="text-gray-700 leading-relaxed space-y-6">
-          {news.text.split('\n').map((paragraph, index) => (
+          {news.text.split("\n").map((paragraph, index) => (
             <p key={index} className="text-lg leading-8">
               {paragraph}
             </p>
           ))}
         </div>
       </article>
-
     </div>
-  )
+  );
 }

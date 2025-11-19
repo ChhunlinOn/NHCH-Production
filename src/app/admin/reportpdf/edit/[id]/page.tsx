@@ -254,7 +254,7 @@ export default function EditReportPdfPage() {
     <div className="min-h-screen bg-gray-100 p-6">
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-4 mt-20">
             <Link href="/admin/dashboard?section=report-pdfs">
               <button className="flex items-center px-4 py-2 text-gray-600 hover:bg-white rounded-lg transition-colors">
                 <ArrowLeft className="w-4 h-4 mr-2" />

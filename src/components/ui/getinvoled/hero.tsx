@@ -8,12 +8,14 @@ export default function Hero() {
     <section className="bg-gradient-to-br from-green-50 via-white to-green-100 text-green-600 py-20 md:py-32">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
-
-         
           <motion.div
             initial={{ y: -10, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 1, repeat: Infinity, repeatType: "reverse" }}
+            transition={{
+              duration: 1,
+              repeat: Infinity,
+              repeatType: "reverse",
+            }}
             className="mx-auto mb-6 inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-600"
           >
             <Heart className="w-8 h-8 text-white" />
@@ -27,7 +29,7 @@ export default function Hero() {
             <span className="text-black">Make a Difference Today</span>
             <br />
             <span className="text-green-600">Sponsor with</span>{" "}
-            <span className="text-black">New Hope for Orphans</span>
+            <span className="text-black">New Hope Children&#39;s Homes</span>
           </motion.h1>
 
           <motion.div
