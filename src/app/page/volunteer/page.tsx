@@ -251,10 +251,10 @@ const Page = () => {
                 <span>Reach out to us at</span>
               </p>
               <a
-                href="mailto:info@nhocambodia.org"
+                href="mailto:info@nhchkh.org"
                 className="text-xl font-bold text-green-600 hover:text-green-700 transition-colors underline"
               >
-                info@nhocambodia.org
+                info@nhchkh.org
               </a>
             </div>
           </motion.div>

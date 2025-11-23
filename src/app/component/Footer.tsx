@@ -138,10 +138,10 @@ export default function Footer() {
                   <path d="m22 6-10 7L2 6" />
                 </svg>
                 <a
-                  href="mailto:info@nhocambodia.org"
+                  href="mailto:info@nhchkh.org"
                   className="hover:text-yellow-300 transition-colors duration-300 underline"
                 >
-                  info@nhocambodia.org
+                  info@nhchkh.org
                 </a>
               </div>
             </div>

@@ -35,7 +35,7 @@ export default function Footer() {
           {/* Contact Info */}
           <div className="grid grid-cols-3 gap-8 mb-12">
             {[
-              { icon: Mail, title: "Email Us", info: "info@newhope.org" },
+              { icon: Mail, title: "Email Us", info: "info@nhchkh.org" },
               { icon: Phone, title: "Call Us", info: "+1 (555) 123-4567" },
               { icon: MapPin, title: "Visit Us", info: "Cambodia" },
             ].map((contact, index) => (

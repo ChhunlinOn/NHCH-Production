@@ -218,14 +218,14 @@ export default function SponsorPage() {
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <a
-              href="mailto:info@nhocambodia.org"
+              href="mailto:info@nhchkh.org"
               className="bg-[#3D8B40] text-white px-6 py-3 rounded-lg hover:bg-[#2d6b30] transition-colors"
             >
               Email Us
             </a>
           </div>
           <div className="mt-6 text-sm text-gray-500">
-            <div>Email: info@nhocambodia.org</div>
+            <div>Email: info@nhchkh.org</div>
             <div>Phone: (+855) 012220945</div>
           </div>
         </div>
