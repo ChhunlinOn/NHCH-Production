@@ -13,7 +13,13 @@ export default function ContactPage() {
     const formData = new FormData(event.target as HTMLFormElement); // Extract form data
 
     // Add access key to the form data
-    formData.append("access_key", "cc7b7303-711c-4db0-ae53-db458849051d");
+    const accessKey = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY;
+    if (!accessKey) {
+      setIsSuccess(false);
+      setMessage("Configuration error: Access key not found.");
+      return;
+    }
+    formData.append("access_key", accessKey);
 
     // Convert form data to an object
     const object = Object.fromEntries(formData);
@@ -34,6 +40,11 @@ export default function ContactPage() {
       if (result.success) {
         setIsSuccess(true); // Success: Set the success state
         setMessage("Form submitted successfully!");
+        (event.target as HTMLFormElement).reset(); // Clear the form
+        setTimeout(() => {
+          setMessage(null);
+          setIsSuccess(null);
+        }, 2000); // Hide message after 2 seconds
       } else {
         setIsSuccess(false); // Error: Set the error state
         setMessage("Form submission failed. Please try again.");
@@ -48,7 +59,7 @@ export default function ContactPage() {
     <div>
       <section className="bg-gradient-to-r from-green-50 to-green-100 py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-5xl font-bold text-green-600 mb-8">CONTACT US</h2>
+          <h2 className="text-5xl font-bold text-green-600 mb-8 mt-6">CONTACT US</h2>
           <p className="text-gray-700 max-w-2xl mx-auto mb-8">
             Reach out to us for more information on how you can contribute,
             volunteer, or partner with us in our mission to create lasting
