@@ -13,7 +13,7 @@ export default function ContactPage() {
     const formData = new FormData(event.target as HTMLFormElement); // Extract form data
 
     // Add access key to the form data
-    const accessKey = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY;
+    const accessKey = 'de68b884-b722-48e4-a821-ecba2f8cbd06';
     if (!accessKey) {
       setIsSuccess(false);
       setMessage("Configuration error: Access key not found.");
