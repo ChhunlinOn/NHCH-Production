@@ -204,7 +204,7 @@ export default function EditTeamMember() {
 
       if (response.ok) {
         alert("Team member updated successfully!");
-        router.push("/admin/dashboard");
+        router.push("/admin/dashboard?section=our-family");
       } else {
         const errorText = await response.text();
         let errorMessage = "Failed to update team member";
