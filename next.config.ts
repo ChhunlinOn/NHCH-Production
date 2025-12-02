@@ -5,7 +5,7 @@ const nextConfig = {
     return [
       {
         // Replace '/wrong-page-url' with the URL Google is indexing incorrectly
-        source: '/wrong-page-url', 
+        source: '/page/magazine', 
         // Replace '/' with the correct URL you want to be indexed (e.g., your index page)
         destination: '/',
         // Set to true for a permanent 301 redirect (best for SEO)
