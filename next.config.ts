@@ -1,5 +1,18 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // 1. ADD THE REDIRECTS FUNCTION HERE
+  async redirects() {
+    return [
+      {
+        // Replace '/wrong-page-url' with the URL Google is indexing incorrectly
+        source: '/wrong-page-url', 
+        // Replace '/' with the correct URL you want to be indexed (e.g., your index page)
+        destination: '/',
+        // Set to true for a permanent 301 redirect (best for SEO)
+        permanent: true, 
+      },
+    ]
+  },
   // Remove this line: output: 'standalone',
   images: {
     domains: ['res.cloudinary.com'],
