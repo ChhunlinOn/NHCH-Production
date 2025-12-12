@@ -80,7 +80,7 @@ export default function NavigationMenu() {
         { label: "NEWS", href: "/page/new" },
         { label: "REPORTS", href: "/page/reports" },
         { label: "PHOTOS", href: "/page/album" },
-        { label: "Highlights Video", href: "/page/magazine" },
+        { label: "Highlights Video", href: "/page/highlight" },
       ],
     },
   ];
